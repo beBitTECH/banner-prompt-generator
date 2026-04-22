@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>beBit TECH — Banner Prompt Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#C8960C;--black:#2D2A1E;--white:#fff;--g50:#FAFAF3;--g100:#F4F3E8;--g200:#E6E5D8;--g400:#A8A598;--g600:#68655A;--g800:#3D3A2C;--r:6px;--rl:12px}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--g50);color:var(--black);font-size:13px;line-height:1.6}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:#F2F1E4;border-bottom:1px solid #E0DED0;height:56px;display:flex;align-items:center;padding:0 32px;justify-content:space-between}
+.topbar-logo{height:22px;display:block}
+.topbar-logo img{height:100%;width:auto;display:block}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.ttitle{font-size:11px;color:#8A8778;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.tdiv{width:1px;height:18px;background:#D8D7C8;margin:0 4px}
+.api-label{font-size:11px;color:#8A8778;font-family:'DM Mono',monospace;letter-spacing:0.5px;white-space:nowrap}
+.api-input{width:200px;padding:6px 10px;border:1px solid #D8D7C8;border-radius:var(--r);font-family:'DM Mono',monospace;font-size:11px;color:#5A5848;background:#FAFAF3;outline:none;transition:border-color .15s}
+.api-input:focus{border-color:var(--yellow);color:var(--black)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 420px;height:calc(100vh - 56px)}
+.form-wrap{overflow-y:auto;padding:32px}
+.form-inner{max-width:700px}
+.section{margin-bottom:40px}
+.section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:1.5px solid var(--g200)}
+.section-idx{font-family:'DM Mono',monospace;font-size:11px;color:var(--g400)}
+.section-name{font-size:13px;font-weight:700;letter-spacing:0.3px}
+.field{margin-bottom:18px}.field:last-child{margin-bottom:0}
+.field-label{display:block;font-size:11px;font-weight:700;color:var(--g600);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px}
+.field-note{font-size:11px;color:var(--g400);margin-top:5px;font-family:'DM Mono',monospace}
+
+input[type=text],textarea{width:100%;padding:9px 12px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;font-family:'Noto Sans TC',sans-serif;color:var(--black);background:var(--white);outline:none;transition:border-color .15s}
+input[type=text]:focus,textarea:focus{border-color:var(--black)}
+textarea{resize:vertical;min-height:64px;line-height:1.6}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--g200);border-radius:4px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--g600);cursor:pointer;background:var(--white);transition:all .1s;user-select:none;white-space:nowrap;line-height:1.4}
+.chip:hover{border-color:var(--g800);color:var(--black)}
+.chip.on{background:var(--black);border-color:var(--black);color:#FAFAF3}
+.chip-desc{font-size:10px;color:var(--g400);display:block;margin-top:1px;font-weight:400}
+.chip.on .chip-desc{color:rgba(250,250,243,0.55)}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dt-group>label{display:block;font-size:11px;color:var(--g400);margin-bottom:4px;font-family:'DM Mono',monospace}
+.dt-selects{display:flex;gap:4px;align-items:center}
+select{padding:8px 6px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;font-family:'Noto Sans TC',sans-serif;color:var(--black);background:var(--white);outline:none;cursor:pointer;transition:border-color .15s;flex:1}
+select:focus{border-color:var(--black)}
+.dt-sep{padding:0 2px;color:var(--g400);font-size:12px;flex-shrink:0}
+
+.speaker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.spk-card{border:1px solid var(--g200);border-radius:var(--rl);padding:12px 8px 10px;text-align:center;cursor:pointer;background:var(--white);transition:all .12s;position:relative}
+.spk-card:hover{border-color:var(--g800)}
+.spk-card.on{border-color:var(--black);border-width:1.5px;background:var(--g100)}
+.spk-avatar{width:48px;height:48px;border-radius:50%;margin:0 auto 8px;overflow:hidden;background:var(--g100);border:1.5px solid var(--g200);display:flex;align-items:center;justify-content:center;font-size:18px}
+.spk-avatar img{width:100%;height:100%;object-fit:cover;object-position:top}
+.spk-name{font-size:11px;font-weight:700;line-height:1.3}
+.spk-role{font-size:10px;color:var(--g400);margin-top:2px;line-height:1.3}
+.spk-check{position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;background:var(--black);color:var(--white);font-size:8px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .12s}
+.spk-card.on .spk-check{opacity:1}
+
+.extra-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.cb-block{border:1px solid var(--g200);border-radius:var(--rl);padding:14px 16px;background:var(--white);margin-bottom:8px}
+.cb-block:last-child{margin-bottom:0}
+.cb-head{margin-bottom:10px}
+.cb-title-lbl{font-size:11px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:0.5px}
+.cb-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.cb-row:last-child{margin-bottom:0}
+.cb-full{margin-bottom:8px}
+
+.venue-wrap{display:none;margin-top:8px}
+.venue-wrap.visible{display:block}
+
+.gen-btn{width:100%;padding:14px;background:var(--black);color:#FAFAF3;border:none;border-radius:var(--r);font-size:13px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;letter-spacing:0.3px;margin-top:8px}
+.gen-btn:hover{background:var(--g800)}
+.gen-btn:disabled{background:var(--g400);cursor:not-allowed}
+.gen-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);flex-shrink:0}
+.gen-status{font-size:11px;color:var(--g400);font-family:'DM Mono',monospace;margin-top:7px;min-height:16px}
+.gen-status.ok{color:#16a34a}.gen-status.err{color:#dc2626}
+
+/* OUTPUT */
+.output-wrap{background:#F5F4E8;display:flex;flex-direction:column;overflow:hidden;height:100%;border-left:1px solid #E0DED0}
+.out-head{flex-shrink:0;padding:20px 24px 16px;border-bottom:1px solid #E0DED0;display:flex;align-items:center;justify-content:space-between;background:#F2F1E4}
+.out-head-left{display:flex;flex-direction:column;gap:2px}
+.out-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--yellow)}
+.out-sublabel{font-size:10px;color:#A8A598;font-family:'DM Mono',monospace}
+.copy-btn{display:none;padding:6px 14px;background:var(--black);border:none;border-radius:var(--r);font-size:11px;font-weight:700;color:#FAFAF3;cursor:pointer;font-family:'DM Mono',monospace;transition:opacity .15s}
+.copy-btn:hover{opacity:.8}
+.copy-btn.ok{background:#22c55e;color:#fff}
+
+.load-bar{flex-shrink:0;height:2px;background:#E0DED0;overflow:hidden;display:none}
+.load-bar.on{display:block}
+.load-inner{height:100%;background:var(--yellow);animation:lp 1.2s ease-in-out infinite}
+@keyframes lp{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
+
+.out-body{flex:1;overflow-y:auto;padding:20px 24px}
+.empty-st{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px}
+.empty-icon{font-size:24px;opacity:.25}
+.empty-txt{font-family:'DM Mono',monospace;font-size:10px;color:#B0ADA0;line-height:2.2;letter-spacing:1px}
+.prompt-block{display:none}
+.p-sec{margin-bottom:20px}
+.p-lyr{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#B0ADA0;margin-bottom:6px}
+.p-txt{font-family:'DM Mono',monospace;font-size:11.5px;line-height:1.9;color:#5A5848;white-space:pre-wrap;word-break:break-word}
+.p-txt .k{color:var(--yellow)}
+.p-txt .dim{color:#A8A598}
+.p-div{height:1px;background:#E0DED0;margin:16px 0}
+
+.var-sum{flex-shrink:0;padding:14px 24px;border-top:1px solid #E0DED0;display:none;flex-wrap:wrap;gap:5px;background:#F2F1E4}
+.var-chip{background:#E8E7DA;border-radius:4px;padding:3px 8px;font-family:'DM Mono',monospace;font-size:10px;color:#68655A}
+.var-chip b{color:#3D3A2C}
+
+@media(max-width:900px){.layout{grid-template-columns:1fr;height:auto}.output-wrap{height:70vh}.form-wrap{padding:20px}.topbar{padding:0 20px}.speaker-grid{grid-template-columns:repeat(2,1fr)}.two-col,.dt-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="#"><img src="images/bebittech-logo.png" alt="beBit TECH" /></a>
+  <div class="topbar-right">
+    <div class="ttitle">Banner Prompt Generator</div>
+    <div class="tdiv"></div>
+    <span class="api-label">Gemini Key</span>
+    <input class="api-input" type="password" id="gemini_key" placeholder="AIza..." />
+  </div>
+</div>
+
+<div class="layout">
+<div class="form-wrap"><div class="form-inner">
+
+<!-- 01 圖片規格 -->
+<div class="section">
+  <div class="section-head"><span class="section-idx">01</span><span class="section-name">圖片規格</span></div>
+  <div class="field">
+    <label class="field-label">比例</label>
+    <div class="chips" id="ratio">
+      <div class="chip on" data-val="1:1 square (1080×1080px)">1:1 方版<span class="chip-desc">FB / IG 最通用</span></div>
+      <div class="chip" data-val="4:5 portrait (1080×1350px)">4:5 直式<span class="chip-desc">IG 手機最優</span></div>
+      <div class="chip" data-val="1.91:1 horizontal (1080×566px)">1.91:1 橫版<span class="chip-desc">FB / LinkedIn</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 設計變數 -->
+<div class="section">
+  <div class="section-head"><span class="section-idx">02</span><span class="section-name">設計變數</span></div>
+
+  <div class="field">
+    <label class="field-label">明暗基調</label>
+    <div class="chips" id="color_base">
+      <div class="chip on" data-val="light">淺色系</div>
+      <div class="chip" data-val="dark">深色系</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">色彩情緒</label>
+    <div class="chips" id="color_mood">
+      <div class="chip on" data-val="calm-professional"
+        data-light="blue-gray tones, low saturation, geometric line accents, generous whitespace"
+        data-dark="deep navy, iron gray, fine lines, cool-toned glow">
+        冷靜專業<span class="chip-desc">藍灰調，理性可信賴</span></div>
+      <div class="chip" data-val="energetic"
+        data-light="warm orange-yellow, high saturation, dynamic diagonal composition, bold typography"
+        data-dark="deep amber, burnt orange, high-contrast geometric shapes">
+        活力積極<span class="chip-desc">橙黃暖色，行動感強</span></div>
+      <div class="chip" data-val="tech-forward"
+        data-light="mint cyan, electric blue, particle light effects, tech texture overlays"
+        data-dark="electric cyan, deep cyan-black, particle glow, futuristic grid lines">
+        科技前衛<span class="chip-desc">青色電子調，未來感</span></div>
+      <div class="chip" data-val="warm-approachable"
+        data-light="cream, ivory, coral tones, rounded shapes, soft shadows, warm lighting"
+        data-dark="deep warm brown, amber undertones, soft glow">
+        溫暖親切<span class="chip-desc">米色珊瑚調，人情味</span></div>
+      <div class="chip" data-val="bold-contrast"
+        data-light="high-contrast color clash (white + black + yellow), oversized headline, asymmetric layout"
+        data-dark="high-contrast clash (black + yellow + white), impact typography">
+        大膽對比<span class="chip-desc">高對比撞色，視覺衝擊</span></div>
+      <div class="chip" data-val="refined-premium"
+        data-light="metallic accents, fine line decoration, elegant typeface, generous negative space"
+        data-dark="deep black with gold or silver metallic details, refined and high-end">
+        質感精緻<span class="chip-desc">金屬點綴，高端質感</span></div>
+    </div>
+    <div class="field-note" id="mood_hint">元素構成：blue-gray tones, low saturation, geometric line accents, generous whitespace</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">人物構圖</label>
+    <div class="chips" id="composition">
+      <div class="chip on" data-val="Hero — speaker dominates 40%+ of canvas; text wraps around the figure; head may bleed off the top edge for maximum visual impact">
+        主角型<span class="chip-desc">人物主導畫面 40%+，文字圍繞</span></div>
+      <div class="chip" data-val="Split — speaker and text share the canvas as equals; side-by-side with clear visual balance; neither dominates">
+        共存型<span class="chip-desc">人物與文字各佔一半</span></div>
+      <div class="chip" data-val="Accent — text and layout dominate; speaker appears as a small supporting circular headshot or shoulder-up cutout at 15–25% of canvas area">
+        點綴型<span class="chip-desc">文字主導，人物為小頭像</span></div>
+      <div class="chip" data-val="Ghost — no speaker photo at all; pure typographic and graphic composition with no human figures">
+        隱形型<span class="chip-desc">無人物，純文字圖形</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="field">
+      <label class="field-label">畫面複雜度</label>
+      <div class="chips" id="visual_complexity">
+        <div class="chip on" data-val="visually minimal — generous whitespace, very few decorative elements, clean and focused">極簡<span class="chip-desc">大留白，少裝飾</span></div>
+        <div class="chip" data-val="visually moderate — some graphic accents, brand shape elements, balanced composition">中等<span class="chip-desc">有圖形點綴</span></div>
+        <div class="chip" data-val="visually rich — layered shapes, textures, full decorative treatment throughout the canvas">豐富<span class="chip-desc">多層視覺元素</span></div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">文字複雜度</label>
+      <div class="chips" id="text_complexity">
+        <div class="chip on" data-val="basic — headline, sub-headline, date and time, speaker name and title, event format, CTA button">
+          基本型<span class="chip-desc">主標＋副標＋活動資訊＋CTA</span></div>
+        <div class="chip" data-val="standard — headline, sub-headline, date and time, speaker name and title, event format, one supporting tagline or short description, CTA button">
+          標準型<span class="chip-desc">基本型＋一行補充說明</span></div>
+        <div class="chip" data-val="rich — headline, sub-headline, date and time, speaker name and title, event format, 3 bullet-point highlights of what attendees will learn, CTA button">
+          豐富型<span class="chip-desc">標準型＋三個學習列點</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 03 活動資訊 -->
+<div class="section">
+  <div class="section-head"><span class="section-idx">03</span><span class="section-name">活動資訊</span></div>
+  <div class="two-col">
+    <div class="field"><label class="field-label">活動主題</label><input type="text" id="topic" placeholder="例：AI 驅動會員回購，電商營收倍增" /></div>
+    <div class="field"><label class="field-label">核心主軸</label><input type="text" id="axis" placeholder="例：CDP 數據 × LINE 自動化" /></div>
+  </div>
+  <div class="field">
+    <label class="field-label">日期 ＆ 時間</label>
+    <div class="dt-grid">
+      <div class="dt-group">
+        <label>日期</label>
+        <div class="dt-selects">
+          <select id="dt_m"></select>
+          <select id="dt_d"></select>
+          <select id="dt_w"><option value="">星期</option><option>（一）</option><option>（二）</option><option>（三）</option><option>（四）</option><option>（五）</option><option>（六）</option><option>（日）</option></select>
+        </div>
+      </div>
+      <div class="dt-group">
+        <label>時間</label>
+        <div class="dt-selects">
+          <select id="dt_sh"></select><select id="dt_sm"></select>
+          <span class="dt-sep">–</span>
+          <select id="dt_eh"></select><select id="dt_em"></select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <label class="field-label">活動形式</label>
+    <div class="chips" id="format">
+      <div class="chip on" data-val="Online Live Stream" data-type="online">線上 LIVE</div>
+      <div class="chip" data-val="In-Person Event" data-type="offline">實體活動</div>
+    </div>
+    <div class="venue-wrap" id="venue_wrap"><input type="text" id="venue" placeholder="活動地點，例：晶華酒店第一貴賓廳" /></div>
+  </div>
+  <div class="field"><label class="field-label">目標產業 Tag（選填）</label><input type="text" id="industry" placeholder="例：電商 / 美妝保養 / 零售" /></div>
+</div>
+
+<!-- 04 講者 -->
+<div class="section">
+  <div class="section-head"><span class="section-idx">04</span><span class="section-name">講者</span></div>
+  <div class="speaker-grid">
+    <div class="spk-card" onclick="toggleSpk(this)" data-name="陳冠綸 Mars Chen" data-title="Sales Director">
+      <div class="spk-check">✓</div>
+      <div class="spk-avatar"><img src="images/mars-chen.png" onerror="this.parentNode.innerHTML='👤'"/></div>
+      <div class="spk-name">Mars Chen</div><div class="spk-role">業務總監</div>
+    </div>
+    <div class="spk-card" onclick="toggleSpk(this)" data-name="謝宮彌 Miya Hsieh" data-title="Customer Success Manager">
+      <div class="spk-check">✓</div>
+      <div class="spk-avatar"><img src="images/miya-hsieh.png" onerror="this.parentNode.innerHTML='👤'"/></div>
+      <div class="spk-name">Miya Hsieh</div><div class="spk-role">客戶成功經理</div>
+    </div>
+    <div class="spk-card" onclick="toggleSpk(this)" data-name="項靖雅 Olivia Hsiang" data-title="Associate Sales Director">
+      <div class="spk-check">✓</div>
+      <div class="spk-avatar"><img src="images/olivia-hsiang.png" onerror="this.parentNode.innerHTML='👤'"/></div>
+      <div class="spk-name">Olivia Hsiang</div><div class="spk-role">業務副總監</div>
+    </div>
+    <div class="spk-card" onclick="toggleSpk(this)" data-name="賴韋翰 Ryan Lai" data-title="Business Development Representative">
+      <div class="spk-check">✓</div>
+      <div class="spk-avatar"><img src="images/ryan-lai.png" onerror="this.parentNode.innerHTML='👤'"/></div>
+      <div class="spk-name">Ryan Lai</div><div class="spk-role">商務拓展代表</div>
+    </div>
+  </div>
+  <div class="field" style="margin-top:10px;">
+    <label class="field-label">其他 beBit TECH 講者（選填）</label>
+    <div class="extra-row">
+      <input type="text" id="extra_name" placeholder="姓名，例：洪貫軒 Shawn Hung"/>
+      <input type="text" id="extra_title" placeholder="職稱，例：商務拓展代表"/>
+    </div>
+  </div>
+</div>
+
+<!-- 05 合作品牌 -->
+<div class="section">
+  <div class="section-head"><span class="section-idx">05</span><span class="section-name">合作品牌（選填）</span></div>
+  <div class="cb-block">
+    <div class="cb-head"><span class="cb-title-lbl">品牌 1</span></div>
+    <div class="cb-full"><input type="text" placeholder="品牌名稱，例：SHOPLINE" class="cb-name"/></div>
+    <div class="cb-row"><input type="text" placeholder="參與者姓名，例：Hank Tseng" class="cb-person"/><input type="text" placeholder="職稱，例：資深商務拓展總監" class="cb-t"/></div>
+  </div>
+  <div class="cb-block">
+    <div class="cb-head"><span class="cb-title-lbl">品牌 2</span></div>
+    <div class="cb-full"><input type="text" placeholder="品牌名稱，例：awoo.ai" class="cb-name"/></div>
+    <div class="cb-row"><input type="text" placeholder="參與者姓名" class="cb-person"/><input type="text" placeholder="職稱" class="cb-t"/></div>
+  </div>
+  <div class="cb-block">
+    <div class="cb-head"><span class="cb-title-lbl">品牌 3</span></div>
+    <div class="cb-full"><input type="text" placeholder="品牌名稱，例：Super 8" class="cb-name"/></div>
+    <div class="cb-row"><input type="text" placeholder="參與者姓名" class="cb-person"/><input type="text" placeholder="職稱" class="cb-t"/></div>
+  </div>
+</div>
+
+<!-- 06 文案風格 -->
+<div class="section">
+  <div class="section-head"><span class="section-idx">06</span><span class="section-name">文案風格</span></div>
+  <div class="two-col">
+    <div class="field">
+      <label class="field-label">訴求角度</label>
+      <div class="chips" id="appeal">
+        <div class="chip" data-val="pain-point — highlight the audience's core frustration or fear">痛點<span class="chip-desc">我有這個問題</span></div>
+        <div class="chip on" data-val="benefit — emphasize the concrete outcome and gain">利益<span class="chip-desc">我能得到這個結果</span></div>
+        <div class="chip" data-val="curiosity — spark intrigue with partial reveal, make them want to know more">好奇<span class="chip-desc">我想知道答案</span></div>
+        <div class="chip" data-val="social proof — peer momentum and sense of belonging, others are already doing this">社群認同<span class="chip-desc">別人都這樣做了</span></div>
+        <div class="chip" data-val="urgency-scarcity — fear of missing out, limited time or limited seats">緊迫稀缺<span class="chip-desc">快要來不及了</span></div>
+        <div class="chip" data-val="self-improvement — appeal to ambition and desire to level up">自我提升<span class="chip-desc">我想變得更好</span></div>
+        <div class="chip" data-val="authority — establish credibility through expertise, track record, and data">專業權威<span class="chip-desc">可信賴的專家</span></div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">敘事結構</label>
+      <div class="chips" id="narrative">
+        <div class="chip on" data-val="direct — state the conclusion first, followed by supporting reasons">直述<span class="chip-desc">結論 → 理由</span></div>
+        <div class="chip" data-val="contrast — before vs after, highlight the transformation gap">對比<span class="chip-desc">Before → After</span></div>
+        <div class="chip" data-val="suspense — pose an intriguing question or problem; the answer is revealed at the event">懸念<span class="chip-desc">拋問題，答案在活動</span></div>
+        <div class="chip" data-val="data-led — open with a striking number or statistic to anchor credibility">數據佐證<span class="chip-desc">數字 → 結論</span></div>
+        <div class="chip" data-val="scene-setting — open with a vivid relatable scenario to create empathy">故事場景<span class="chip-desc">情境 → 共鳴 → 解法</span></div>
+        <div class="chip" data-val="list-format — structured as key points or clear takeaways">列舉式<span class="chip-desc">重點一、二、三…</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <label class="field-label">語氣</label>
+    <div class="chips" id="tone">
+      <div class="chip on" data-val="professional and confident — authoritative, clear, commands respect">專業自信<span class="chip-desc">有所主張，說話有份量</span></div>
+      <div class="chip" data-val="conversational and approachable — warm, friendly, feels like talking to a peer">親切對話<span class="chip-desc">像跟朋友說話，有溫度</span></div>
+      <div class="chip" data-val="energetic and motivating — high energy, action-oriented, stirs emotion">活力激勵<span class="chip-desc">有能量，帶動情緒</span></div>
+      <div class="chip" data-val="concise and punchy — minimal words, every word carries weight, impactful">簡潔俐落<span class="chip-desc">字少力道強</span></div>
+      <div class="chip" data-val="provocative and challenging — disrupts assumptions, makes the reader stop and think">挑釁質疑<span class="chip-desc">打破現狀，刺激反思</span></div>
+      <div class="chip" data-val="rational and data-driven — calm, objective, lets numbers and evidence do the talking">數據理性<span class="chip-desc">冷靜客觀，數字說話</span></div>
+    </div>
+  </div>
+</div>
+
+<button class="gen-btn" id="gen_btn" onclick="generate()"><span class="gen-dot"></span>Generate with Gemini</button>
+<div class="gen-status" id="gen_status"></div>
+</div></div>
+
+<!-- OUTPUT -->
+<div class="output-wrap">
+  <div class="out-head">
+    <div class="out-head-left">
+      <div class="out-label">Prompt Output</div>
+      <div class="out-sublabel" id="out_sub">等待生成…</div>
+    </div>
+    <button class="copy-btn" id="copy_btn" onclick="copyPrompt()">Copy</button>
+  </div>
+  <div class="load-bar" id="load_bar"><div class="load-inner"></div></div>
+  <div class="out-body">
+    <div class="empty-st"><div class="empty-icon">⚡</div><div class="empty-txt">填入活動資訊<br>選擇設計變數<br>點擊 Generate</div></div>
+    <div class="prompt-block" id="prompt_block"><div id="prompt_content"></div></div>
+  </div>
+  <div class="var-sum" id="var_sum"></div>
+</div>
+</div>
+
+<script>
+// init selects
+(function(){
+  const m=document.getElementById('dt_m');
+  for(let i=1;i<=12;i++) m.innerHTML+=`<option value="${i}">${i}月</option>`;
+  const d=document.getElementById('dt_d');
+  d.innerHTML='<option value="">日</option>';
+  for(let i=1;i<=31;i++) d.innerHTML+=`<option value="${i}">${i}日</option>`;
+  ['dt_sh','dt_eh'].forEach(id=>{const el=document.getElementById(id);for(let i=8;i<=22;i++)el.innerHTML+=`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;});
+  ['dt_sm','dt_em'].forEach(id=>{const el=document.getElementById(id);['00','15','30','45'].forEach(v=>el.innerHTML+=`<option value="${v}">${v}</option>`);});
+  document.getElementById('dt_m').value=new Date().getMonth()+1;
+  document.getElementById('dt_sh').value='14';
+  document.getElementById('dt_eh').value='15';
+  document.getElementById('dt_em').value='30';
+})();
+
+// chips
+document.querySelectorAll('.chips').forEach(g=>{
+  g.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      g.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+      if(g.id==='format') document.getElementById('venue_wrap').classList.toggle('visible',c.dataset.type==='offline');
+      if(g.id==='color_mood'||g.id==='color_base') updateHint();
+    });
+  });
+});
+
+function updateHint(){
+  const base=document.querySelector('#color_base .chip.on')?.dataset.val||'light';
+  const mc=document.querySelector('#color_mood .chip.on');
+  if(!mc) return;
+  document.getElementById('mood_hint').textContent='元素構成：'+(mc.dataset[base]||'');
+}
+updateHint();
+
+function toggleSpk(c){c.classList.toggle('on');}
+function getSel(id){return document.querySelector('#'+id+' .chip.on')?.dataset.val||'';}
+function getLabel(id){return document.querySelector('#'+id+' .chip.on')?.childNodes[0]?.textContent?.trim()||'';}
+function v(id){return(document.getElementById(id)?.value||'').trim();}
+
+function getDateTime(){
+  const mo=v('dt_m'),da=v('dt_d'),dow=v('dt_w'),sh=v('dt_sh'),sm=v('dt_sm'),eh=v('dt_eh'),em=v('dt_em');
+  if(!mo||!da) return '(date not set)';
+  const dowMap={'（一）':'Mon','（二）':'Tue','（三）':'Wed','（四）':'Thu','（五）':'Fri','（六）':'Sat','（日）':'Sun'};
+  return `${mo}/${da}${dow?' ('+dowMap[dow]+')':''} ${sh}:${sm}–${eh}:${em}`;
+}
+
+function getSpeakers(){
+  const list=Array.from(document.querySelectorAll('.spk-card.on')).map(c=>`${c.dataset.name}, ${c.dataset.title}, beBit TECH`);
+  const en=v('extra_name'),et=v('extra_title');
+  if(en) list.push(`${en}${et?', '+et+', beBit TECH':''}`);
+  return list;
+}
+
+function getCobrands(){
+  return Array.from(document.querySelectorAll('.cb-block')).map(b=>({
+    name:(b.querySelector('.cb-name')?.value||'').trim(),
+    person:(b.querySelector('.cb-person')?.value||'').trim(),
+    title:(b.querySelector('.cb-t')?.value||'').trim()
+  })).filter(c=>c.name);
+}
+
+async function callGemini(prompt,key){
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.85,maxOutputTokens:800}})});
+  if(!res.ok){const e=await res.json();throw new Error(e?.error?.message||res.statusText);}
+  const d=await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+
+async function generate(){
+  const key=v('gemini_key');
+  if(!key){setStatus('請先輸入 Gemini API Key','err');return;}
+
+  const isRich=getSel('text_complexity').includes('rich');
+  document.getElementById('gen_btn').disabled=true;
+  document.getElementById('load_bar').classList.add('on');
+  document.querySelector('.empty-st').style.display='none';
+  document.getElementById('prompt_block').style.display='none';
+  document.getElementById('copy_btn').style.display='none';
+  document.getElementById('var_sum').style.display='none';
+  setStatus('Gemini 生成文案中…');
+
+  const topic=v('topic'),axis=v('axis'),ind=v('industry');
+  let copy={headline:topic||'(topic not set)',subheadline:axis||'',bullets:[],cta:'Register for Free →'};
+
+  try{
+    // Ask Gemini to generate copy IN ENGLISH for the prompt
+    const gp=`You are a B2B marketing copywriter for beBit TECH, a leading AI marketing technology company in Taiwan. Generate banner ad copy IN ENGLISH based on the following event information.
+
+Event topic: ${topic}
+Core message: ${axis}
+Appeal angle: ${getSel('appeal')}
+Narrative structure: ${getSel('narrative')}
+Tone of voice: ${getSel('tone')}
+Target industry: ${ind||'e-commerce'}
+Text complexity: ${getLabel('text_complexity')}
+
+Respond ONLY in valid JSON with no markdown or extra text:
+{"headline":"(max 12 words, action-oriented)","subheadline":"(max 20 words, expands on headline)","bullets":${isRich?'["key takeaway 1 (max 8 words)","key takeaway 2","key takeaway 3"]':'[]'},"cta":"(max 5 words, action verb first)"}`;
+
+    const raw=await callGemini(gp,key);
+    const m=raw.match(/\{[\s\S]*\}/);
+    if(m) copy={...copy,...JSON.parse(m[0])};
+    setStatus('✓ 文案生成完成','ok');
+  }catch(e){setStatus('⚠ 文案失敗，使用預設值｜'+e.message,'err');}
+
+  // build layers (all in English)
+  const base=document.querySelector('#color_base .chip.on')?.dataset.val||'light';
+  const mc=document.querySelector('#color_mood .chip.on');
+  const colorElements=mc?.dataset[base]||'';
+  const colorMoodVal=mc?.dataset.val||'';
+
+  const speakers=getSpeakers();
+  const cobrands=getCobrands();
+  const format=getSel('format');
+  const venue=v('venue');
+  const datetime=getDateTime();
+
+  const cbLine=cobrands.length
+    ?'\nCo-brands:\n'+cobrands.map(c=>`  - ${c.name}${c.person?' — '+c.person+(c.title?' ('+c.title+')':''):''}`).join('\n')
+    :'';
+  const venLine=(format.toLowerCase().includes('in-person')&&venue)?`\nVenue: ${venue}`:'';
+  const bList=copy.bullets?.length>0?`\nHighlight bullets:\n${copy.bullets.map(b=>'  • '+b).join('\n')}`:'';
+
+  const L1=`You are a professional graphic designer. Create a B2B event banner for beBit TECH, a Taiwanese AI marketing tech company. Design with strong visual hierarchy and a distinctive aesthetic. You have full creative freedom on typography, spacing, and decorative details — make it feel genuinely designed, not generic.`;
+
+  const L2=`Aspect ratio: ${getSel('ratio')}
+Color tone: ${base==='light'?'Light':'Dark'} background — ${colorMoodVal} mood
+Color elements: ${colorElements}
+Speaker composition: ${getSel('composition')}
+Visual complexity: ${getSel('visual_complexity')}
+Text complexity: ${getSel('text_complexity')}`;
+
+  const L3=`Brand: beBit TECH Academy${cbLine}
+Headline: "${copy.headline}"
+Sub-headline: "${copy.subheadline}"${bList}
+Date & time: ${datetime}
+Format: ${format}${venLine}
+Speakers:
+${speakers.length?speakers.map(s=>'  - '+s).join('\n'):'  - (none selected)'}
+CTA: "${copy.cta}"${ind?'\nTarget industry: '+ind:''}`;
+
+  window._pt=`[Layer 1 — Generation Instruction]\n${L1}\n\n[Layer 2 — Design Variables]\n${L2}\n\n[Layer 3 — Event Info]\n${L3}`;
+
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const hi=s=>esc(s).replace(/^([A-Za-z][^:\n]+:)/gm,'<span class="k">$1</span>');
+
+  document.getElementById('prompt_content').innerHTML=`
+    <div class="p-sec"><div class="p-lyr">// Layer 1 — Generation Instruction</div><div class="p-txt dim">${esc(L1)}</div></div>
+    <div class="p-div"></div>
+    <div class="p-sec"><div class="p-lyr">// Layer 2 — Design Variables</div><div class="p-txt">${hi(L2)}</div></div>
+    <div class="p-div"></div>
+    <div class="p-sec"><div class="p-lyr">// Layer 3 — Event Info + AI Copy</div><div class="p-txt">${hi(L3)}</div></div>`;
+
+  const tags=[
+    {l:'比例',id:'ratio'},{l:'明暗',id:'color_base'},{l:'色彩',id:'color_mood'},
+    {l:'構圖',id:'composition'},{l:'畫面',id:'visual_complexity'},{l:'文字',id:'text_complexity'},
+    {l:'訴求',id:'appeal'},{l:'敘事',id:'narrative'},{l:'語氣',id:'tone'}
+  ];
+  const vs=document.getElementById('var_sum');
+  vs.innerHTML=tags.map(t=>`<div class="var-chip"><b>${t.l}</b> ${getLabel(t.id)}</div>`).join('');
+  vs.style.display='flex';
+
+  document.getElementById('prompt_block').style.display='block';
+  document.getElementById('copy_btn').style.display='block';
+  document.getElementById('out_sub').textContent='生成於 '+new Date().toLocaleTimeString('zh-TW');
+  document.getElementById('gen_btn').disabled=false;
+  document.getElementById('load_bar').classList.remove('on');
+}
+
+function setStatus(msg,type){const el=document.getElementById('gen_status');el.textContent=msg;el.className='gen-status'+(type?' '+type:'');}
+function copyPrompt(){if(!window._pt)return;navigator.clipboard.writeText(window._pt).then(()=>{const b=document.getElementById('copy_btn');b.textContent='Copied ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='Copy';b.classList.remove('ok');},2000);});}
+</script>
+</body>
+</html>
