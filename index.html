@@ -38,7 +38,10 @@ input[type=text]:focus,textarea:focus{border-color:var(--black)}
 textarea{resize:vertical;min-height:64px;line-height:1.6}
 
 .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.chips-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .chip{border:1px solid var(--g200);border-radius:4px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--g600);cursor:pointer;background:var(--white);transition:all .1s;user-select:none;white-space:nowrap;line-height:1.4}
+.chips-grid .chip,.chips-grid-4 .chip{white-space:normal;text-align:left}
 .chip:hover{border-color:var(--g800);color:var(--black)}
 .chip.on{background:var(--black);border-color:var(--black);color:#FAFAF3}
 .chip-desc{font-size:10px;color:var(--g400);display:block;margin-top:1px;font-weight:400}
@@ -109,6 +112,10 @@ select:focus{border-color:var(--black)}
 .p-txt .dim{color:#A8A598}
 .p-div{height:1px;background:#E0DED0;margin:16px 0}
 
+.copy-inline-wrap{margin-top:24px;padding-top:20px;border-top:1px solid #E0DED0}
+.copy-inline-btn{width:100%;padding:13px;background:var(--black);color:#FAFAF3;border:none;border-radius:var(--r);font-size:13px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:background .15s;letter-spacing:0.5px}
+.copy-inline-btn:hover{background:var(--g800)}
+.copy-inline-btn.ok{background:#22c55e;color:#fff}
 .var-sum{flex-shrink:0;padding:14px 24px;border-top:1px solid #E0DED0;display:none;flex-wrap:wrap;gap:5px;background:#F2F1E4}
 .var-chip{background:#E8E7DA;border-radius:4px;padding:3px 8px;font-family:'DM Mono',monospace;font-size:10px;color:#68655A}
 .var-chip b{color:#3D3A2C}
@@ -158,38 +165,50 @@ select:focus{border-color:var(--black)}
 
   <div class="field">
     <label class="field-label">色彩情緒</label>
-    <div class="chips" id="color_mood">
+    <div class="chips chips-grid" id="color_mood">
       <div class="chip on" data-val="calm-professional"
         data-light="blue-gray tones, low saturation, geometric line accents, generous whitespace"
-        data-dark="deep navy, iron gray, fine lines, cool-toned glow">
+        data-dark="deep navy, iron gray, fine lines, cool-toned glow"
+        data-light-zh="藍灰色調、低飽和度、幾何線條點綴、充裕留白"
+        data-dark-zh="深海軍藍、鐵灰色、細線條、冷調光暈">
         冷靜專業<span class="chip-desc">藍灰調，理性可信賴</span></div>
       <div class="chip" data-val="energetic"
         data-light="warm orange-yellow, high saturation, dynamic diagonal composition, bold typography"
-        data-dark="deep amber, burnt orange, high-contrast geometric shapes">
+        data-dark="deep amber, burnt orange, high-contrast geometric shapes"
+        data-light-zh="暖橙黃色、高飽和度、動態斜線構圖、粗獷字體"
+        data-dark-zh="深琥珀色、焦橙色、高對比幾何形狀">
         活力積極<span class="chip-desc">橙黃暖色，行動感強</span></div>
       <div class="chip" data-val="tech-forward"
         data-light="mint cyan, electric blue, particle light effects, tech texture overlays"
-        data-dark="electric cyan, deep cyan-black, particle glow, futuristic grid lines">
+        data-dark="electric cyan, deep cyan-black, particle glow, futuristic grid lines"
+        data-light-zh="薄荷青、電氣藍、粒子光效、科技紋理疊層"
+        data-dark-zh="電氣青色、深青黑、粒子光暈、未來感格線">
         科技前衛<span class="chip-desc">青色電子調，未來感</span></div>
       <div class="chip" data-val="warm-approachable"
         data-light="cream, ivory, coral tones, rounded shapes, soft shadows, warm lighting"
-        data-dark="deep warm brown, amber undertones, soft glow">
+        data-dark="deep warm brown, amber undertones, soft glow"
+        data-light-zh="奶油色、象牙白、珊瑚色調、圓潤形狀、柔和陰影、暖光"
+        data-dark-zh="深暖棕色、琥珀底色、柔和光暈">
         溫暖親切<span class="chip-desc">米色珊瑚調，人情味</span></div>
       <div class="chip" data-val="bold-contrast"
         data-light="high-contrast color clash (white + black + yellow), oversized headline, asymmetric layout"
-        data-dark="high-contrast clash (black + yellow + white), impact typography">
+        data-dark="high-contrast clash (black + yellow + white), impact typography"
+        data-light-zh="高對比撞色（白＋黑＋黃）、超大標題、不對稱版型"
+        data-dark-zh="高對比撞色（黑＋黃＋白）、強衝擊字體排版">
         大膽對比<span class="chip-desc">高對比撞色，視覺衝擊</span></div>
       <div class="chip" data-val="refined-premium"
         data-light="metallic accents, fine line decoration, elegant typeface, generous negative space"
-        data-dark="deep black with gold or silver metallic details, refined and high-end">
+        data-dark="deep black with gold or silver metallic details, refined and high-end"
+        data-light-zh="金屬質感點綴、細線裝飾、優雅字體、充裕留白"
+        data-dark-zh="深黑底搭金銀金屬細節、精緻高端質感">
         質感精緻<span class="chip-desc">金屬點綴，高端質感</span></div>
     </div>
-    <div class="field-note" id="mood_hint">元素構成：blue-gray tones, low saturation, geometric line accents, generous whitespace</div>
+    <div class="field-note" id="mood_hint">元素構成：藍灰色調、低飽和度、幾何線條點綴、充裕留白</div>
   </div>
 
   <div class="field">
     <label class="field-label">人物構圖</label>
-    <div class="chips" id="composition">
+    <div class="chips chips-grid-4" id="composition">
       <div class="chip on" data-val="Hero — speaker dominates 40%+ of canvas; text wraps around the figure; head may bleed off the top edge for maximum visual impact">
         主角型<span class="chip-desc">人物主導畫面 40%+，文字圍繞</span></div>
       <div class="chip" data-val="Split — speaker and text share the canvas as equals; side-by-side with clear visual balance; neither dominates">
@@ -204,7 +223,7 @@ select:focus{border-color:var(--black)}
   <div class="two-col">
     <div class="field">
       <label class="field-label">畫面複雜度</label>
-      <div class="chips" id="visual_complexity">
+      <div class="chips chips-grid" id="visual_complexity">
         <div class="chip on" data-val="visually minimal — generous whitespace, very few decorative elements, clean and focused">極簡<span class="chip-desc">大留白，少裝飾</span></div>
         <div class="chip" data-val="visually moderate — some graphic accents, brand shape elements, balanced composition">中等<span class="chip-desc">有圖形點綴</span></div>
         <div class="chip" data-val="visually rich — layered shapes, textures, full decorative treatment throughout the canvas">豐富<span class="chip-desc">多層視覺元素</span></div>
@@ -212,7 +231,7 @@ select:focus{border-color:var(--black)}
     </div>
     <div class="field">
       <label class="field-label">文字複雜度</label>
-      <div class="chips" id="text_complexity">
+      <div class="chips chips-grid" id="text_complexity">
         <div class="chip on" data-val="basic — headline, sub-headline, date and time, speaker name and title, event format, CTA button">
           基本型<span class="chip-desc">主標＋副標＋活動資訊＋CTA</span></div>
         <div class="chip" data-val="standard — headline, sub-headline, date and time, speaker name and title, event format, one supporting tagline or short description, CTA button">
@@ -323,7 +342,7 @@ select:focus{border-color:var(--black)}
   <div class="two-col">
     <div class="field">
       <label class="field-label">訴求角度</label>
-      <div class="chips" id="appeal">
+      <div class="chips chips-grid" id="appeal">
         <div class="chip" data-val="pain-point — highlight the audience's core frustration or fear">痛點<span class="chip-desc">我有這個問題</span></div>
         <div class="chip on" data-val="benefit — emphasize the concrete outcome and gain">利益<span class="chip-desc">我能得到這個結果</span></div>
         <div class="chip" data-val="curiosity — spark intrigue with partial reveal, make them want to know more">好奇<span class="chip-desc">我想知道答案</span></div>
@@ -335,7 +354,7 @@ select:focus{border-color:var(--black)}
     </div>
     <div class="field">
       <label class="field-label">敘事結構</label>
-      <div class="chips" id="narrative">
+      <div class="chips chips-grid" id="narrative">
         <div class="chip on" data-val="direct — state the conclusion first, followed by supporting reasons">直述<span class="chip-desc">結論 → 理由</span></div>
         <div class="chip" data-val="contrast — before vs after, highlight the transformation gap">對比<span class="chip-desc">Before → After</span></div>
         <div class="chip" data-val="suspense — pose an intriguing question or problem; the answer is revealed at the event">懸念<span class="chip-desc">拋問題，答案在活動</span></div>
@@ -347,7 +366,7 @@ select:focus{border-color:var(--black)}
   </div>
   <div class="field">
     <label class="field-label">語氣</label>
-    <div class="chips" id="tone">
+    <div class="chips chips-grid" id="tone">
       <div class="chip on" data-val="professional and confident — authoritative, clear, commands respect">專業自信<span class="chip-desc">有所主張，說話有份量</span></div>
       <div class="chip" data-val="conversational and approachable — warm, friendly, feels like talking to a peer">親切對話<span class="chip-desc">像跟朋友說話，有溫度</span></div>
       <div class="chip" data-val="energetic and motivating — high energy, action-oriented, stirs emotion">活力激勵<span class="chip-desc">有能量，帶動情緒</span></div>
@@ -369,12 +388,16 @@ select:focus{border-color:var(--black)}
       <div class="out-label">Prompt Output</div>
       <div class="out-sublabel" id="out_sub">等待生成…</div>
     </div>
-    <button class="copy-btn" id="copy_btn" onclick="copyPrompt()">Copy</button>
   </div>
   <div class="load-bar" id="load_bar"><div class="load-inner"></div></div>
   <div class="out-body">
     <div class="empty-st"><div class="empty-icon">⚡</div><div class="empty-txt">填入活動資訊<br>選擇設計變數<br>點擊 Generate</div></div>
-    <div class="prompt-block" id="prompt_block"><div id="prompt_content"></div></div>
+    <div class="prompt-block" id="prompt_block">
+      <div id="prompt_content"></div>
+      <div class="copy-inline-wrap">
+        <button class="copy-inline-btn" id="copy_inline_btn" onclick="copyPrompt()">一鍵複製 Prompt</button>
+      </div>
+    </div>
   </div>
   <div class="var-sum" id="var_sum"></div>
 </div>
@@ -412,7 +435,8 @@ function updateHint(){
   const base=document.querySelector('#color_base .chip.on')?.dataset.val||'light';
   const mc=document.querySelector('#color_mood .chip.on');
   if(!mc) return;
-  document.getElementById('mood_hint').textContent='元素構成：'+(mc.dataset[base]||'');
+  const zhKey=base==='light'?'lightZh':'darkZh';
+  document.getElementById('mood_hint').textContent='元素構成：'+(mc.dataset[zhKey]||mc.dataset[base]||'');
 }
 updateHint();
 
@@ -460,7 +484,6 @@ async function generate(){
   document.getElementById('load_bar').classList.add('on');
   document.querySelector('.empty-st').style.display='none';
   document.getElementById('prompt_block').style.display='none';
-  document.getElementById('copy_btn').style.display='none';
   document.getElementById('var_sum').style.display='none';
   setStatus('Gemini 生成文案中…');
 
@@ -546,14 +569,16 @@ CTA: "${copy.cta}"${ind?'\nTarget industry: '+ind:''}`;
   vs.style.display='flex';
 
   document.getElementById('prompt_block').style.display='block';
-  document.getElementById('copy_btn').style.display='block';
   document.getElementById('out_sub').textContent='生成於 '+new Date().toLocaleTimeString('zh-TW');
   document.getElementById('gen_btn').disabled=false;
   document.getElementById('load_bar').classList.remove('on');
 }
 
 function setStatus(msg,type){const el=document.getElementById('gen_status');el.textContent=msg;el.className='gen-status'+(type?' '+type:'');}
-function copyPrompt(){if(!window._pt)return;navigator.clipboard.writeText(window._pt).then(()=>{const b=document.getElementById('copy_btn');b.textContent='Copied ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='Copy';b.classList.remove('ok');},2000);});}
+function copyPrompt(){if(!window._pt)return;navigator.clipboard.writeText(window._pt).then(()=>{
+  const b=document.getElementById('copy_inline_btn');b.textContent='已複製 ✓';b.classList.add('ok');
+  setTimeout(()=>{b.textContent='一鍵複製 Prompt';b.classList.remove('ok');},2000);
+});}
 </script>
 </body>
 </html>
