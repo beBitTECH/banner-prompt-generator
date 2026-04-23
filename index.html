@@ -286,22 +286,22 @@ select:focus{border-color:var(--black)}
 <div class="section">
   <div class="section-head"><span class="section-idx">04</span><span class="section-name">講者</span></div>
   <div class="speaker-grid">
-    <div class="spk-card" onclick="toggleSpk(this)" data-name="陳冠綸 Mars Chen" data-title="Sales Director">
+    <div class="spk-card" onclick="toggleSpk(this)" data-name="陳冠綸 Mars Chen" data-title="業務總監">
       <div class="spk-check">✓</div>
       <div class="spk-avatar"><img src="images/mars-chen.png" onerror="this.parentNode.innerHTML='👤'"/></div>
       <div class="spk-name">Mars Chen</div><div class="spk-role">業務總監</div>
     </div>
-    <div class="spk-card" onclick="toggleSpk(this)" data-name="謝宮彌 Miya Hsieh" data-title="Customer Success Manager">
+    <div class="spk-card" onclick="toggleSpk(this)" data-name="謝宮彌 Miya Hsieh" data-title="客戶成功經理">
       <div class="spk-check">✓</div>
       <div class="spk-avatar"><img src="images/miya-hsieh.png" onerror="this.parentNode.innerHTML='👤'"/></div>
       <div class="spk-name">Miya Hsieh</div><div class="spk-role">客戶成功經理</div>
     </div>
-    <div class="spk-card" onclick="toggleSpk(this)" data-name="項靖雅 Olivia Hsiang" data-title="Associate Sales Director">
+    <div class="spk-card" onclick="toggleSpk(this)" data-name="項靖雅 Olivia Hsiang" data-title="業務副總監">
       <div class="spk-check">✓</div>
       <div class="spk-avatar"><img src="images/olivia-hsiang.png" onerror="this.parentNode.innerHTML='👤'"/></div>
       <div class="spk-name">Olivia Hsiang</div><div class="spk-role">業務副總監</div>
     </div>
-    <div class="spk-card" onclick="toggleSpk(this)" data-name="賴韋翰 Ryan Lai" data-title="Business Development Representative">
+    <div class="spk-card" onclick="toggleSpk(this)" data-name="賴韋翰 Ryan Lai" data-title="商務拓展代表">
       <div class="spk-check">✓</div>
       <div class="spk-avatar"><img src="images/ryan-lai.png" onerror="this.parentNode.innerHTML='👤'"/></div>
       <div class="spk-name">Ryan Lai</div><div class="spk-role">商務拓展代表</div>
@@ -488,22 +488,21 @@ async function generate(){
   setStatus('Gemini 生成文案中…');
 
   const topic=v('topic'),axis=v('axis'),ind=v('industry');
-  let copy={headline:topic||'(topic not set)',subheadline:axis||'',bullets:[],cta:'Register for Free →'};
+  let copy={headline:topic||'（主題未填）',subheadline:axis||'',bullets:[],cta:'立即免費報名 →'};
 
   try{
-    // Ask Gemini to generate copy IN ENGLISH for the prompt
-    const gp=`You are a B2B marketing copywriter for beBit TECH, a leading AI marketing technology company in Taiwan. Generate banner ad copy IN ENGLISH based on the following event information.
+    const gp=`你是 beBit TECH 的 B2B 行銷文案專家。使用者提供了活動的原始主題與核心訊息，請根據以下風格設定，將其轉化為更有吸引力、更行銷導向的繁體中文海報文案。不要原封不動複製使用者輸入，要重新創作。
 
-Event topic: ${topic}
-Core message: ${axis}
-Appeal angle: ${getSel('appeal')}
-Narrative structure: ${getSel('narrative')}
-Tone of voice: ${getSel('tone')}
-Target industry: ${ind||'e-commerce'}
-Text complexity: ${getLabel('text_complexity')}
+活動主題（原始輸入）：${topic}
+核心訊息（原始輸入）：${axis}
+訴求角度：${getSel('appeal')}
+敘事結構：${getSel('narrative')}
+語氣：${getSel('tone')}
+文字複雜度：${getLabel('text_complexity')}
+${ind?'目標產業（僅供參考，不必出現在文案中）：'+ind:''}
 
-Respond ONLY in valid JSON with no markdown or extra text:
-{"headline":"(max 12 words, action-oriented)","subheadline":"(max 20 words, expands on headline)","bullets":${isRich?'["key takeaway 1 (max 8 words)","key takeaway 2","key takeaway 3"]':'[]'},"cta":"(max 5 words, action verb first)"}`;
+請以 JSON 格式回應，不要有任何 markdown 或多餘文字：
+{"headline":"（最多20字，衝擊力強、行動導向）","subheadline":"（最多30字，補充說明標題）","bullets":${isRich?'["學習重點1（最多15字）","學習重點2","學習重點3"]':'[]'},"cta":"（最多10字，動詞開頭，例：立即免費報名 →）"}`;
 
     const raw=await callGemini(gp,key);
     const m=raw.match(/\{[\s\S]*\}/);
@@ -538,14 +537,14 @@ Speaker composition: ${getSel('composition')}
 Visual complexity: ${getSel('visual_complexity')}
 Text complexity: ${getSel('text_complexity')}`;
 
-  const L3=`Brand: beBit TECH Academy${cbLine}
+  const L3=`Brand: beBit TECH${cbLine}
 Headline: "${copy.headline}"
 Sub-headline: "${copy.subheadline}"${bList}
 Date & time: ${datetime}
 Format: ${format}${venLine}
 Speakers:
 ${speakers.length?speakers.map(s=>'  - '+s).join('\n'):'  - (none selected)'}
-CTA: "${copy.cta}"${ind?'\nTarget industry: '+ind:''}`;
+CTA: "${copy.cta}"`;
 
   window._pt=`[Layer 1 — Generation Instruction]\n${L1}\n\n[Layer 2 — Design Variables]\n${L2}\n\n[Layer 3 — Event Info]\n${L3}`;
 
