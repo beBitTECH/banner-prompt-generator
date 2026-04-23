@@ -506,6 +506,7 @@ ${ind?'目標產業（僅供參考，不必出現在文案中）：'+ind:''}
 {"headline":"（最多20字，衝擊力強、行動導向）","subheadline":"（最多30字，補充說明標題）","bullets":${isRich?'["學習重點1（最多15字）","學習重點2","學習重點3"]':'[]'},"cta":"（最多10字，動詞開頭，例：立即免費報名 →）"}`;
 
     const raw=await callGemini(gp,key);
+    setStatus('[DEBUG] Gemini raw: '+raw.substring(0,300));
     const m=raw.match(/\{[\s\S]*\}/);
     if(m) copy={...copy,...JSON.parse(m[0])};
     setStatus('✓ 文案生成完成','ok');
