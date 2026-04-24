@@ -22,9 +22,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--g50);color:var(--bla
 .api-input:focus{border-color:var(--yellow);color:var(--black)}
 
 /* LAYOUT */
-.layout{display:grid;grid-template-columns:1fr 420px;height:calc(100vh - 56px)}
-.form-wrap{overflow-y:auto;padding:32px}
-.form-inner{max-width:700px}
+.layout{display:grid;grid-template-columns:1fr 460px;height:calc(100vh - 56px)}
+.form-wrap{overflow-y:auto;padding:32px 40px;border-right:1px solid #E0DED0}
+.form-inner{}
 .section{margin-bottom:40px}
 .section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:1.5px solid var(--g200)}
 .section-idx{font-family:'DM Mono',monospace;font-size:11px;color:var(--g400)}
@@ -469,7 +469,11 @@ function getCobrands(){
 
 async function callGemini(prompt,key){
   const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
-  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.85,maxOutputTokens:800}})});
+  const body={
+    contents:[{parts:[{text:prompt}]}],
+    generationConfig:{temperature:0.9,maxOutputTokens:1000,thinkingConfig:{thinkingBudget:0}}
+  };
+  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   if(!res.ok){const e=await res.json();throw new Error(e?.error?.message||res.statusText);}
   const d=await res.json();
   const parts=d.candidates?.[0]?.content?.parts||[];
@@ -492,21 +496,29 @@ async function generate(){
   let copy={headline:topic||'（主題未填）',subheadline:axis||'',bullets:[],cta:'立即免費報名 →'};
 
   try{
-    const gp=`你是 beBit TECH 的 B2B 行銷文案專家。使用者提供了活動的原始主題與核心訊息，請根據以下風格設定，將其轉化為更有吸引力、更行銷導向的繁體中文海報文案。不要原封不動複製使用者輸入，要重新創作。
+    const gp=`你是 beBit TECH 的 B2B 活動海報文案專家。
 
-活動主題（原始輸入）：${topic}
-核心訊息（原始輸入）：${axis}
+任務：根據以下資訊，重新創作更有行銷力的海報文案。主標題必須比原始輸入更吸引人，絕對不可以原封不動複製原始輸入文字。
+
+【原始活動資訊】
+活動主題：${topic}
+核心訊息：${axis}${ind?'\n參考產業：'+ind:''}
+
+【文案風格】
 訴求角度：${getSel('appeal')}
 敘事結構：${getSel('narrative')}
 語氣：${getSel('tone')}
-文字複雜度：${getLabel('text_complexity')}
-${ind?'目標產業（僅供參考，不必出現在文案中）：'+ind:''}
 
-請以 JSON 格式回應，不要有任何 markdown 或多餘文字：
-{"headline":"（最多20字，衝擊力強、行動導向）","subheadline":"（最多30字，補充說明標題）","bullets":${isRich?'["學習重點1（最多15字）","學習重點2","學習重點3"]':'[]'},"cta":"（最多10字，動詞開頭，例：立即免費報名 →）"}`;
+【輸出規則】
+- 語言：繁體中文
+- headline：最多16字，有衝擊感，不可與原始主題完全相同
+- subheadline：最多25字，補充說明 headline
+- cta：最多8字，動詞開頭
+
+只輸出以下 JSON，不要有任何其他文字、說明或 markdown：
+{"headline":"...","subheadline":"...","bullets":${isRich?'["...","...","..."]':'[]'},"cta":"..."}`;
 
     const raw=await callGemini(gp,key);
-    document.getElementById('out_sub').textContent='[DEBUG] '+raw.substring(0,400);
     const m=raw.match(/\{[\s\S]*\}/);
     if(m) copy={...copy,...JSON.parse(m[0])};
     setStatus('✓ 文案生成完成','ok');
